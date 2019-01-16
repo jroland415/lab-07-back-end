@@ -14,6 +14,7 @@ app.use(cors());
 app.get('/location', searchToLatLong);
 app.get('/weather', searchWeather);
 app.get('/yelp', searchFood);
+app.get('/movies', searchMovies);
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
@@ -73,6 +74,29 @@ function Food(restaurant) {
   this.rating = restaurant.rating;
   this.price = restaurant.price;
   this.image_url = restaurant.image_url;
+}
+
+function searchMovies(req, res) {
+  const url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${req.query.data.search_query}`;
+
+  return superagent.get(url)
+    .then((moviesResponse) => {
+      const areaMovies = moviesResponse.body.results.map((movie) => {
+        return new Movie(movie);
+      });
+      res.send(areaMovies);
+    })
+    .catch((err) => handleError(err, res));
+}
+
+function Movie(movie) {
+  this.title = movie.title;
+  this.released_on = movie.release_date;
+  this.total_votes = movie.vote_count;
+  this.average_votes = movie.vote_average;
+  this.popularity = movie.popularity;
+  this.image_url = `https://image.tmdb.org/t/p/w200${movie.poster_path}`;
+  this.overview = movie.overview;
 }
 
 function handleError(err, res) {
