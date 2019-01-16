@@ -95,7 +95,7 @@ function Movie(movie) {
   this.total_votes = movie.vote_count;
   this.average_votes = movie.vote_average;
   this.popularity = movie.popularity;
-  this.image_url = `https://image.tmdb.org/t/p/w200${movie.poster_path}`;
+  this.image_url = movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : 'http://media.graytvinc.com/images/810*607/Movie32.jpg';
   this.overview = movie.overview;
 }
 
