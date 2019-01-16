@@ -13,6 +13,7 @@ app.use(cors());
 
 app.get('/location', searchToLatLong);
 app.get('/weather', searchWeather);
+app.get('/yelp', searchFood);
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
@@ -50,6 +51,28 @@ function Weather(day) {
   this.forecast = day.summary;
   this.time = new Date(day.time * 1000)
     .toLocaleDateString('en-US', {weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'});
+}
+
+function searchFood(req, res) {
+  const url = `https://api.yelp.com/v3/businesses/search?term=restaurants&latitude=${req.query.data.latitude}&longitude=${req.query.data.longitude}`;
+
+  return superagent.get(url)
+    .set('Authorization', `Bearer ${process.env.YELP_API_KEY}`)
+    .then((foodResponse) => {
+      const foodReviews = foodResponse.body.businesses.map((restaurant) => {
+        return new Food(restaurant);
+      });
+      res.send(foodReviews);
+    })
+    .catch((err) => handleError(err, res));
+}
+
+function Food(restaurant) {
+  this.name = restaurant.name;
+  this.url = restaurant.url;
+  this.rating = restaurant.rating;
+  this.price = restaurant.price;
+  this.image_url = restaurant.image_url;
 }
 
 function handleError(err, res) {
