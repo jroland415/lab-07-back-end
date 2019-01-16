@@ -13,7 +13,6 @@ app.use(cors());
 
 app.get('/location', searchToLatLong);
 app.get('/weather', searchWeather);
-app.use('*', (request, response) => response.status(500).send('Sorry, that route does not exist.'));
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
